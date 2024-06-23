@@ -1,22 +1,16 @@
-# Project API
+# Project slabcode-api
 
 This is a backend application built with Express, TypeScript, and PostgreSQL using Prisma as the ORM. It provides a RESTful API for managing projects and tasks with user authentication.
 
 ## Table of Contents
 
-- [Project API](#project-api)
-  - [Table of Contents](#table-of-contents)
-  - [Features](#features)
-  - [Requirements](#requirements)
-  - [Installation](#installation)
-  - [Environment Variables](#environment-variables)
-  - [Database Migration and Seeding](#database-migration-and-seeding)
-  - [Running the Application](#running-the-application)
-  - [Endpoints](#endpoints)
-    - [Auth](#auth)
-    - [Projects](#projects)
-    - [Tasks](#tasks)
-  - [License](#license)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Environment Variables](#environment-variables)
+- [Database Migration and Seeding](#database-migration-and-seeding)
+- [Running the Application](#running-the-application)
+- [License](#license)
 
 ## Features
 
@@ -29,56 +23,58 @@ This is a backend application built with Express, TypeScript, and PostgreSQL usi
 - Node.js
 - PostgreSQL
 
-markdown
-Copy code
-## Instalación
+## Installation
 
-1. Clona el repositorio:
-
+1. Clone the repository:
    ```bash
    git clone https://github.com/your-username/project-api.git
    cd project-api
-Instala las dependencias:
+   ```
 
-bash
-Copy code
-npm install
-Variables de Entorno
-Crea un archivo .env en la raíz del proyecto y agrega las siguientes variables de entorno:
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-env
-Copy code
+## Environment Variables
+
+Create a `.env` file in the root of the project and add the following variables:
+
+```env
 DATABASE_URL="postgresql://user:password@localhost:5432/mydb"
 JWT_SECRET="your_jwt_secret"
-PORT=5000
-Migración y Seed de la Base de Datos
-Ejecuta las migraciones de Prisma para configurar el esquema de la base de datos:
+```
 
-bash
-Copy code
-npx prisma migrate dev --name init
-Genera el cliente de Prisma:
+## Database Migration and Seeding
 
-bash
-Copy code
-npx prisma generate
-Población inicial de la base de datos:
+1. Run Prisma migrations:
+   ```bash
+   npx prisma migrate dev --name init
+   ```
 
-bash
-Copy code
-npx prisma db seed
-Ejecución de la Aplicación
-Para iniciar la aplicación en modo de desarrollo, ejecuta:
+2. Generate Prisma client:
+   ```bash
+   npx prisma generate
+   ```
 
-bash
-Copy code
+3. Seed the database:
+   ```bash
+   npx prisma db seed
+   ```
+
+## Running the Application
+
+To start the application in development mode, run:
+
+```bash
 npm run dev
-El servidor estará ejecutándose en http://localhost:5000.
+```
 
-Licencia
-Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo LICENSE para obtener más detalles.
+The server will be running at `http://localhost:5000`.
 
+## License
 
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 
 
