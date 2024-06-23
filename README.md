@@ -29,37 +29,54 @@ This is a backend application built with Express, TypeScript, and PostgreSQL usi
 - Node.js
 - PostgreSQL
 
-## Installation
+markdown
+Copy code
+## Instalación
 
-1. Clone the repository:
+1. Clona el repositorio:
 
-```bash
-git clone https://github.com/your-username/project-api.git
-cd project-api
-2. Install dependencies
+   ```bash
+   git clone https://github.com/your-username/project-api.git
+   cd project-api
+Instala las dependencias:
+
+bash
+Copy code
 npm install
+Variables de Entorno
+Crea un archivo .env en la raíz del proyecto y agrega las siguientes variables de entorno:
 
-# Environment Variables
-Create a .env file in the root of the project and add the following environment variables:
+env
+Copy code
 DATABASE_URL="postgresql://user:password@localhost:5432/mydb"
 JWT_SECRET="your_jwt_secret"
+PORT=5000
+Migración y Seed de la Base de Datos
+Ejecuta las migraciones de Prisma para configurar el esquema de la base de datos:
 
-## Database Migration and Seeding
-
-1. Run the Prisma migrations to set up the database schema:
+bash
+Copy code
 npx prisma migrate dev --name init
-2. Generate Prisma client:
+Genera el cliente de Prisma:
+
+bash
+Copy code
 npx prisma generate
-3. Seed the database with initial data:
+Población inicial de la base de datos:
+
+bash
+Copy code
 npx prisma db seed
+Ejecución de la Aplicación
+Para iniciar la aplicación en modo de desarrollo, ejecuta:
 
-## Running the Application
-To start the application in development mode, run:
+bash
+Copy code
 npm run dev
-The server will be running on http://localhost:5000.
+El servidor estará ejecutándose en http://localhost:5000.
 
-# License
-This project is licensed under the MIT License. See the LICENSE file for details
+Licencia
+Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo LICENSE para obtener más detalles.
 
 
 
