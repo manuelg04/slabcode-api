@@ -11,7 +11,7 @@ export const createTask = async (req: Request, res: Response) => {
       data: {
         name,
         description,
-        projectId,
+        projectId,//hola
       },
     });
     res.json(task);
