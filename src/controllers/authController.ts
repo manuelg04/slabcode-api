@@ -1,26 +1,21 @@
 ﻿import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import { IAuthService } from '../interfaces/IAuthService';
 
-const prisma = new PrismaClient();
+export class AuthController {
+  private authService: IAuthService;
 
-export const login = async (req: Request, res: Response) => {
+  constructor(authService: IAuthService) {
+    this.authService = authService;
+  }
+
+  login = async (req: Request, res: Response): Promise<void> => {
     const { username, password } = req.body;
-  
+
     try {
-      const user = await prisma.user.findUnique({ where: { username } });
-  
-      if (user && await bcrypt.compare(password, user.password)) {
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as string, {
-          expiresIn: '1h',
-        });
-        res.json({ token });
-      } else {
-        res.status(401).json({ message: 'Invalid credentials' });
-      }
+      const token = await this.authService.login(username, password);
+      res.json({ token });
     } catch (error) {
-      console.error('Error during login:', error);
-      res.status(500).json({ message: 'Server error', error });
+      res.status(401).json({ message: 'Invalid credentials' });
     }
   };
+}
