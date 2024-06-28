@@ -56,7 +56,11 @@ export class ProjectController {
       const project = await this.projectService.completeProject(Number(id));
       res.json(project);
     } catch (error) {
-      res.status(500).json({ message: "Error completing project", error });
+      if (error instanceof Error) {
+        res.status(400).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'An unexpected error occurred while completing the project' });
+      }
     }
   };
 }
