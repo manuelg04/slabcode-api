@@ -1,66 +1,59 @@
 ﻿import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { ITaskService } from "../interfaces/ITaskService";
 
-const prisma = new PrismaClient();
+export class TaskController {
+  constructor(private taskService: ITaskService) {}
 
-export const createTask = async (req: Request, res: Response) => {
-  const { name, description, projectId } = req.body;
+  createTask = async (req: Request, res: Response): Promise<void> => {
+    const { name, description, projectId } = req.body;
 
-  try {
-    const task = await prisma.task.create({
-      data: {
+    try {
+      const task = await this.taskService.createTask(
         name,
         description,
-        projectId,//hola
-      },
-    });
-    res.json(task);
-  } catch (error) {
-    res.status(500).json({ message: "Error creating task", error });
-  }
-};
+        projectId
+      );
+      res.status(201).json(task);
+    } catch (error) {
+      res.status(500).json({ message: "Error creating task", error });
+    }
+  };
 
-export const updateTask = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { name, description } = req.body;
+  updateTask = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const { name, description } = req.body;
 
-  try {
-    const task = await prisma.task.update({
-      where: { id: Number(id) },
-      data: {
+    try {
+      const task = await this.taskService.updateTask(
+        Number(id),
         name,
-        description,
-      },
-    });
-    res.json(task);
-  } catch (error) {
-    res.status(500).json({ message: "Error updating task", error });
-  }
-};
+        description
+      );
+      res.json(task);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating task", error });
+    }
+  };
 
-export const deleteTask = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  deleteTask = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
 
-  try {
-    await prisma.task.delete({
-      where: { id: Number(id) },
-    });
-    res.json({ message: "Task deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting task", error });
-  }
-};
+    try {
+      await this.taskService.deleteTask(Number(id));
+      res.json({ message: "Task deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Error deleting task", error });
+    }
+  };
 
-export const completeTask = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  completeTask = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
 
-  try {
-    const updatedTask = await prisma.task.update({
-      where: { id: Number(id) },
-      data: { status: "Finalizado" },
-    });
-    res.json(updatedTask);
-  } catch (error) {
-    res.status(500).json({ message: "Error completing task", error });
-  }
-};
+    try {
+      const task = await this.taskService.completeTask(Number(id));
+      res.json(task);
+    } catch (error) {
+      res.status(500).json({ message: "Error completing task", error });
+    }
+  };
+}

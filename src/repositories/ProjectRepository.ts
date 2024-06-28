@@ -1,48 +1,71 @@
-import { PrismaClient } from '@prisma/client';
-import { Project } from '../entities/Project';
+import prisma from "../config/database";
+import { Project } from "../entities/Project";
+import { IProjectRepository } from "../interfaces/IProjectRepository";
 
-export class ProjectRepository {
-  private prisma: PrismaClient;
-
-  constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
-  }
-
-  async create(project: Omit<Project, 'id'>): Promise<Project> {
-    const createdProject = await this.prisma.project.create({
-      data: project,
+export class ProjectRepository implements IProjectRepository {
+  async create(
+    name: string,
+    description: string,
+    userId: number
+  ): Promise<Project> {
+    const project = await prisma.project.create({
+      data: { name, description, userId, status: "En Proceso" },
     });
     return new Project(
-      createdProject.id,
-      createdProject.name,
-      createdProject.description,
-      createdProject.status,
-      createdProject.userId
+      project.id,
+      project.name,
+      project.description,
+      project.status,
+      project.userId
     );
   }
 
-  async update(id: number, data: Partial<Omit<Project, 'id' | 'userId'>>): Promise<Project> {
-    const updatedProject = await this.prisma.project.update({
+  async update(
+    id: number,
+    name?: string,
+    description?: string
+  ): Promise<Project> {
+    const project = await prisma.project.update({
       where: { id },
-      data,
+      data: { name, description },
     });
     return new Project(
-      updatedProject.id,
-      updatedProject.name,
-      updatedProject.description,
-      updatedProject.status,
-      updatedProject.userId
+      project.id,
+      project.name,
+      project.description,
+      project.status,
+      project.userId
     );
   }
 
   async delete(id: number): Promise<void> {
-    await this.prisma.project.delete({ where: { id } });
+    await prisma.project.delete({ where: { id } });
   }
 
   async findById(id: number): Promise<Project | null> {
-    const project = await this.prisma.project.findUnique({ where: { id } });
+    const project = await prisma.project.findUnique({ where: { id } });
     return project
-      ? new Project(project.id, project.name, project.description, project.status, project.userId)
+      ? new Project(
+          project.id,
+          project.name,
+          project.description,
+          project.status,
+          project.userId
+        )
       : null;
+  }
+
+  async complete(id: number): Promise<Project> {
+    const project = await prisma.project.update({
+      where: { id },
+      data: { status: "Finalizado" },
+    });
+    return new Project(
+      project.id,
+      project.name,
+      project.description,
+      project.status,
+      project.userId
+    );
   }
 }

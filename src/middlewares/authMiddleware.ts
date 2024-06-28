@@ -1,22 +1,28 @@
-﻿import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+﻿import { Request, Response, NextFunction } from "express";
+import { AuthService } from "../services/AuthService";
+import { UserRepository } from "../repositories/UserRepository";
 
-interface AuthenticatedRequest extends Request {
-  user?: { userId: number };
-}
+const userRepository = new UserRepository();
+const authService = new AuthService(userRepository);
 
-export const authenticate = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+export const authenticate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const token = req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
-    return res.status(401).json({ message: 'Access denied. No token provided.' });
+    return res
+      .status(401)
+      .json({ message: "Access denied. No token provided." });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    req.user = decoded as { userId: number };
+    const user = await authService.validateToken(token);
+    (req as any).user = { userId: user.id };
     next();
   } catch (error) {
-    res.status(400).json({ message: 'Invalid token.' });
+    res.status(400).json({ message: "Invalid token." });
   }
 };

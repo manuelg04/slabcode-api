@@ -1,20 +1,20 @@
 import { IProjectService } from '../interfaces/IProjectService';
-import { ProjectRepository } from '../repositories/ProjectRepository';
-import { TaskRepository } from '../repositories/TaskRepository';
+import { IProjectRepository } from '../interfaces/IProjectRepository';
+import { ITaskRepository } from '../interfaces/ITaskRepository';
 import { Project } from '../entities/Project';
 
 export class ProjectService implements IProjectService {
   constructor(
-    private projectRepository: ProjectRepository,
-    private taskRepository: TaskRepository
+    private projectRepository: IProjectRepository,
+    private taskRepository: ITaskRepository
   ) {}
 
   async createProject(name: string, description: string, userId: number): Promise<Project> {
-    return this.projectRepository.create({ name, description, status: 'En Proceso', userId });
+    return this.projectRepository.create(name, description, userId);
   }
 
-  async updateProject(id: number, name: string, description: string): Promise<Project> {
-    return this.projectRepository.update(id, { name, description });
+  async updateProject(id: number, name?: string, description?: string): Promise<Project> {
+    return this.projectRepository.update(id, name, description);
   }
 
   async deleteProject(id: number): Promise<void> {
@@ -26,11 +26,6 @@ export class ProjectService implements IProjectService {
   }
 
   async completeProject(id: number): Promise<Project> {
-    const project = await this.projectRepository.findById(id);
-    if (!project) {
-      throw new Error('Project not found');
-    }
-
     const tasks = await this.taskRepository.findByProjectId(id);
     const allTasksCompleted = tasks.every((task) => task.status === 'Finalizado');
 
@@ -38,6 +33,6 @@ export class ProjectService implements IProjectService {
       throw new Error('Not all tasks are completed');
     }
 
-    return this.projectRepository.update(id, { status: 'Finalizado' });
+    return this.projectRepository.complete(id);
   }
 }

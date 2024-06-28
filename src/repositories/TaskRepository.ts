@@ -1,55 +1,81 @@
-import { PrismaClient } from '@prisma/client';
-import { Task } from '../entities/Task';
+import prisma from "../config/database";
+import { Task } from "../entities/Task";
+import { ITaskRepository } from "../interfaces/ITaskRepository";
 
-export class TaskRepository {
-  private prisma: PrismaClient;
-
-  constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
-  }
-
-  async create(task: Omit<Task, 'id'>): Promise<Task> {
-    const createdTask = await this.prisma.task.create({
-      data: task,
+export class TaskRepository implements ITaskRepository {
+  async create(
+    name: string,
+    description: string | null,
+    projectId: number
+  ): Promise<Task> {
+    const task = await prisma.task.create({
+      data: { name, description, projectId, status: "En Proceso" },
     });
     return new Task(
-      createdTask.id,
-      createdTask.name,
-      createdTask.description,
-      createdTask.status,
-      createdTask.projectId
+      task.id,
+      task.name,
+      task.description,
+      task.status,
+      task.projectId
     );
   }
 
-  async update(id: number, data: Partial<Omit<Task, 'id' | 'projectId'>>): Promise<Task> {
-    const updatedTask = await this.prisma.task.update({
+  async update(id: number, name?: string, description?: string): Promise<Task> {
+    const task = await prisma.task.update({
       where: { id },
-      data,
+      data: { name, description },
     });
     return new Task(
-      updatedTask.id,
-      updatedTask.name,
-      updatedTask.description,
-      updatedTask.status,
-      updatedTask.projectId
+      task.id,
+      task.name,
+      task.description,
+      task.status,
+      task.projectId
     );
   }
 
   async delete(id: number): Promise<void> {
-    await this.prisma.task.delete({ where: { id } });
+    await prisma.task.delete({ where: { id } });
   }
 
   async findById(id: number): Promise<Task | null> {
-    const task = await this.prisma.task.findUnique({ where: { id } });
+    const task = await prisma.task.findUnique({ where: { id } });
     return task
-      ? new Task(task.id, task.name, task.description, task.status, task.projectId)
+      ? new Task(
+          task.id,
+          task.name,
+          task.description,
+          task.status,
+          task.projectId
+        )
       : null;
   }
 
   async findByProjectId(projectId: number): Promise<Task[]> {
-    const tasks = await this.prisma.task.findMany({ where: { projectId } });
+    const tasks = await prisma.task.findMany({ where: { projectId } });
     return tasks.map(
-      (task) => new Task(task.id, task.name, task.description, task.status, task.projectId)
+      (task) =>
+        new Task(
+          task.id,
+          task.name,
+          task.description,
+          task.status,
+          task.projectId
+        )
+    );
+  }
+
+  async complete(id: number): Promise<Task> {
+    const task = await prisma.task.update({
+      where: { id },
+      data: { status: "Finalizado" },
+    });
+    return new Task(
+      task.id,
+      task.name,
+      task.description,
+      task.status,
+      task.projectId
     );
   }
 }
